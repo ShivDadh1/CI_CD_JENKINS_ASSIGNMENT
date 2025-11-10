@@ -10,12 +10,13 @@ pipeline {
 
         stage('Setup Python') {
             steps {
+                // Install Python3 if not installed
                 sh '''
                 if ! command -v python3 &> /dev/null
                 then
                     echo "Python3 not found, installing..."
-                    sudo apt-get update -y
-                    sudo apt-get install -y python3 python3-pip
+                    apt-get update -y
+                    apt-get install -y python3 python3-pip
                 else
                     echo "Python3 already installed"
                 fi
@@ -33,9 +34,11 @@ pipeline {
     post {
         success {
             echo 'Build succeeded!'
+            // WebEx notifications can be added here later
         }
         failure {
             echo 'Build failed!'
+            // WebEx notifications can be added here later
         }
     }
 }
