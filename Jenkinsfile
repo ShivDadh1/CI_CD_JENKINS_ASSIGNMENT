@@ -1,20 +1,32 @@
 pipeline {
     agent any
 
-    triggers {
-        githubPush() // Allows GitHub webhook to trigger build
-    }
-
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/ShivDadh1/CI_CD_JENKINS_ASSIGNMENT.git'
+                checkout scm
             }
         }
 
-        stage('Run Python') {
+        stage('Setup Python') {
             steps {
-                bat 'python sample_code.py'
+                // Install Python3 if not installed
+                sh '''
+                if ! command -v python3 &> /dev/null
+                then
+                    echo "Python3 not found, installing..."
+                    apt-get update
+                    apt-get install -y python3 python3-pip
+                else
+                    echo "Python3 already installed"
+                fi
+                '''
+            }
+        }
+
+        stage('Run Python Script') {
+            steps {
+                sh 'python3 sample_code.py'
             }
         }
     }
@@ -22,9 +34,11 @@ pipeline {
     post {
         success {
             echo 'Build succeeded!'
+            // Add WebEx notification step here if needed
         }
         failure {
             echo 'Build failed!'
+            // Add WebEx notification step here if needed
         }
     }
 }
