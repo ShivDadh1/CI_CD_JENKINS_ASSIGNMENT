@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.11'   // Official Python image with Python pre-installed
+            args '-u root:root'    // Run as root inside container to avoid permission issues
+        }
+    }
 
     stages {
         stage('Checkout') {
@@ -8,25 +13,10 @@ pipeline {
             }
         }
 
-        stage('Setup Python') {
-            steps {
-                // Install Python3 if not installed
-                sh '''
-                if ! command -v python3 &> /dev/null
-                then
-                    echo "Python3 not found, installing..."
-                    apt-get update -y
-                    apt-get install -y python3 python3-pip
-                else
-                    echo "Python3 already installed"
-                fi
-                '''
-            }
-        }
-
         stage('Run Python Script') {
             steps {
-                sh 'python3 sample_code.py'
+                // Run your Python script
+                sh 'python sample_code.py'
             }
         }
     }
@@ -34,11 +24,11 @@ pipeline {
     post {
         success {
             echo 'Build succeeded!'
-            // WebEx notifications can be added here later
+            // Add WebEx notification here if needed later
         }
         failure {
             echo 'Build failed!'
-            // WebEx notifications can be added here later
+            // Add WebEx notification here if needed later
         }
     }
 }
